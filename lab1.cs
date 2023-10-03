@@ -12,10 +12,10 @@ double g;
 double c;
 for (int i = 1; i <= 10; i++)
 {
- c = 1;
- g = c / i;
- s = s + g;
- Console.WriteLine(g);
+    c = 1;
+    g = c / i;
+    s = s + g;
+    Console.WriteLine(g);
 }
 Console.WriteLine(s);
 */
@@ -32,27 +32,29 @@ for (int i = 2; i <= 113; i += 2)
 }
 Console.WriteLine(s);*/
 #endregion
+
 #region 1_4
 /*double s = 0;
 double x = 2;
-for (int i = 1; i <= 9; i++)
+for (int i = 0; i <= 8; i++)
 {
- s += Math.Cos(x * i) / Math.Pow(x, i - 1);
- Console.WriteLine(Math.Pow(x, i - 1));
+    s += Math.Cos(x * (i+1)) / x * i;
 }
 Console.WriteLine(s);*/
 #endregion
+
 #region 1_5
 /*int p = 3;
 double s = 0;
 int h = 0;
 for (int i = 0; i <= 9; i++)
 {
- s += Math.Pow(p + h, 2);
- h += 10;
+    s += (p + h)*(p+h);
+    h += 10;
 }
 Console.WriteLine(s);*/
 #endregion
+
 #region 1_6
 /*double Xn = -4;
 double Xk = 4;
@@ -90,10 +92,14 @@ Console.WriteLine(s);*/
 #region 1_9
 /*double s = 0;
 int b = 1;
+int a5 = 5;
+int a1 = -1;
 for (int i = 1; i <= 6; i++)
 {
- b = b * i;
- s += Math.Pow(-1,i)*Math.Pow(5,i)/b;
+    b = b * i;
+    s += a1 * a5 / b;
+    a1 *= a1;
+    a5 *= a5;
 }
 Console.WriteLine(s);*/
 #endregion
@@ -119,11 +125,12 @@ Console.WriteLine(s);*/
 }*/
 #endregion
 #region 1_12
-/*double x=double.Parse(Console.ReadLine());
-double s = 0;
-for (int i=0; i <= 10; i++)
+/*double x = double.Parse(Console.ReadLine());
+double s = 1;
+for (int i = 0; i <= 10; i++)
 {
- s += 1 / Math.Pow(x, i);
+    s += 1 / x;
+    x *= x;
 }
 Console.WriteLine(s);*/
 #endregion
@@ -180,10 +187,10 @@ Console.WriteLine(s);*/
 /*double s = 0;
 int x = 401;
 int n = 1;
-while ((Math.Cos(n * x) / Math.Pow(n, 2)) > 0.0001)
+while ((Math.Cos(n * x) / n*n) > 0.0001)
 {
- s += (Math.Cos(n * x) / Math.Pow(n, 2));
- n++;
+    s += (Math.Cos(n * x) / n*n);
+    n++;
 }
 Console.WriteLine(s);*/
 #endregion
@@ -214,11 +221,12 @@ Console.WriteLine(n);*/
 /*double s = 0;
 double x = 0.5;
 double e = 0.0001;
-int l = 0;
-while (Math.Pow(x, l * 2) > e)
+
+double s1 = 1;
+while (s1 > e)
 {
- s += Math.Pow(x, l * 2);
- l++;
+    s += s1;
+    s1 *= (x * x);
 }
 Console.WriteLine(s);*/
 #endregion
@@ -289,6 +297,9 @@ Console.WriteLine(x);*/
 #endregion
 
 #region 3_4
+using System;
+using System.Security.Cryptography;
+
 double a = 0.1;
 double b = 1;
 double h = 0.1;
@@ -297,14 +308,15 @@ for (double x = a; x <= b; x += h)
 {
     double i = 1;
     double fact = 1;
-    while (((2 * i + 1) * Math.Pow(x, 2 * i) / fact) > 0.0001)
+    double stepX2I = x;
+    while (((2 * i + 1) * stepX2I / fact) > 0.0001)
     {
-        sum += ((2 * i + 1) * Math.Pow(x, 2 * i) / fact);
+        sum += ((2 * i + 1) * stepX2I / fact);
         i++;
         fact *= i;
+        stepX2I = stepX2I * stepX2I;
     }
-    Console.WriteLine("функция Y в точке X = {1,1} равна {0,1}", Math.Pow(Math.E, Math.Cos(x)) *
-    Math.Cos(Math.Sin(x)), x);
+    Console.WriteLine("функция Y в точке X = {1,1} равна {0,1}", (1 + 2 * x * x) * Math.Pow(Math.E, x * x), x);
 }
 Console.WriteLine("итоговая сумма = {0,1}", sum);
 #endregion
