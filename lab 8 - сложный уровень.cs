@@ -232,10 +232,8 @@ class Task_12 : Task
     {"an", '='},
     {"on", '+'},
     {"tell", '{'},
-    {"does", '}'},
     {"set", '['},
     {"at", ']'},
-    {"want", ';'},
     {"by", ':'},
     {"well", '"'},
     {"also", '\\'},
@@ -377,7 +375,7 @@ public class Program
         }
         task10.Print(text, code);
 
-        Console.WriteLine("\n\nЗадание№12\nВведите текст (пример текста с кодовыми словами - you, as. which, do, he, if, how said an tell does at want by )");
+        Console.WriteLine("\n\nЗадание№12\nВведите текст (пример текста с кодовыми словами - you, as. which, do, he, if, how said an tell at by )");
         text = Console.ReadLine();
         var task12 = new Task_12("");
         task12.Print(text, code);
