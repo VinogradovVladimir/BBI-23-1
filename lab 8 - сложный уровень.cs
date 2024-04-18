@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,31 +11,27 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 abstract class Task
 {
-    public Task(string text) { }
-    protected abstract string ParseText(string text, string[] code);
-    public virtual void Print(string text, string[] code)
+    private string _text;
+    public Task(string text) { _text = text; }
+    public virtual string ToString()
     {
-        Console.Write(text);
+        return _text;
     }
 }
 class Task_8 : Task
 {
-    public Task_8(string t) : base(t) { }
+    private string _text;
+    public Task_8(string t) : base(t) { _text = t; }
     public override string ToString()
     {
-        return base.ToString();
+        _text = ParseText(_text);
+        return _text;
     }
-    public override void Print(string text, string[] code)
-    {
-        text = ParseText(text, code);
-        Console.Write("\nЗадание№8\n{0}", text);
-    }
-
-
-    protected override string ParseText(string text, string[] code)
+    private string ParseText(string text)
     {
         int j = 0;
         while (j < text.Length - 50)
@@ -76,23 +72,39 @@ class Task_8 : Task
 }
 class Task_9 : Task
 {
-    public Task_9(string t) : base(t) { }
+    private string _text;
+    public Task_9(string t) : base(t) { _text = t; }
     public override string ToString()
     {
-        return base.ToString();
+        Dictionary<string, int> letter = Create_Dictionary(_text);
+
+        string[] keys = Sorting_Keys((Dictionary<string, int>)letter);
+
+        char[] kode = Create_Code_Table(_text);
+
+        Print_Code_Table(keys, kode);
+        _text = ToReplace(_text, keys, kode);
+
+        return _text;
     }
-    public override void Print(string text, string[] code)
-    {
-        Console.Write("\n\nЗадание№9");
-        text = ParseText(text   , code);
-        Console.Write("\nРезультат: \n{0}", text);
-    }
-    protected override string ParseText(string text, string[] code)
+    private Dictionary<string, int> Create_Dictionary(string text)
     {
         Dictionary<string, int> letter = new Dictionary<string, int>();
+        //английский 
         for (int i = 65; i < 91; i++)
         {
             for (int j = 65; j < 91; j++)
+            {
+                char first = char.ToLower((char)i);
+                char second = char.ToLower((char)j);
+                string key = first.ToString() + second.ToString();
+                letter.Add(key, 0);
+            }
+        }
+        //русский через unicode
+        for (int i = 1072; i < 1106; i++)
+        {
+            for (int j = 1072; j < 1106; j++)
             {
                 char first = char.ToLower((char)i);
                 char second = char.ToLower((char)j);
@@ -108,6 +120,10 @@ class Task_9 : Task
                 letter[two]++;
             }
         }
+        return letter;
+    }
+    private string[] Sorting_Keys(Dictionary<string, int> letter)
+    {
         string[] keys = new string[10];
         int max = 0;
         for (int j = 0; j < 10; j++)
@@ -134,6 +150,10 @@ class Task_9 : Task
                 }
             }
         }
+        return keys;
+    }
+    private char[] Create_Code_Table(string text)
+    {
         char[] kode = new char[10];
         int k = 0;
 
@@ -155,6 +175,11 @@ class Task_9 : Task
             }
             if (k == 10) break;
         }
+        return kode;
+    }
+    private void Print_Code_Table(string[] keys, char[] kode)
+    {
+
         Console.WriteLine("\n\nТаблица символов/кодов:");
         for (int j = 0; j < keys.Length; j++)
         {
@@ -165,8 +190,11 @@ class Task_9 : Task
         {
             Console.Write("\t {0}", kode[j]);
         }
+    }
+    private string ToReplace(string text, string[] keys, char[] kode)
+    {
         int l = keys.Length;
-        if (l>text.Length) l= text.Length;
+        if (l > text.Length) l = text.Length;
         for (int j = 0; j < l; j++)
         {
             if (keys[j] != null)
@@ -183,19 +211,21 @@ class Task_9 : Task
 }
 class Task_10 : Task
 {
-    public Task_10(string t) : base(t) { }
+    private string _text;
+    private string[] _code;
+    public Task_10(string t, string[] code) : base(t)
+    {
+        _text = t; 
+        _code = code;
+    }
     public override string ToString()
     {
-        return base.ToString();
+        _text = ParseText(_text, _code);
+        return _text;
     }
-    public override void Print(string text, string[] code)
+    private string ParseText(string text, string[] code)
     {
-        text = ParseText(text, code);
-        Console.Write("\nРезультат:\n{0}", text);
-    }
-    protected override string ParseText(string text, string[] code)
-    {
-        for (int j = 0; j < code.Length; j=j+2)
+        for (int j = 0; j < code.Length; j = j + 2)
         {
             text = text.Replace(code[j], code[j + 1]);
         }
@@ -204,60 +234,25 @@ class Task_10 : Task
 }
 class Task_12 : Task
 {
-    public Task_12(string t) : base(t) { }
+    private string _text;
+    public Task_12(string t) : base(t) { _text = t; }
     public override string ToString()
     {
-        return base.ToString();
+        _text = ParseText(_text);
+        return _text;
     }
-    public override void Print(string text, string[] code)
+    private string[] Input(string text, Dictionary<string, char> codes)
     {
-        text = ParseText(text, code);
-        Console.Write("\nРезультат:\n{0}", text);
-    }
-    protected override string ParseText(string text, string[] code)
-    {
-        Dictionary<string, char> codes = new Dictionary<string, char>
-{
-    {"you", '@'},
-    {"as", '#'},
-    {"his", '$'},
-    {"which", '%'},
-    {"do", '^'},
-    {"that", '&'},
-    {"he", '*'},
-    {"if", '('},
-    {"will", ')'},
-    {"how", '-'},
-    {"said", '_'},
-    {"an", '='},
-    {"on", '+'},
-    {"tell", '{'},
-    {"set", '['},
-    {"at", ']'},
-    {"by", ':'},
-    {"well", '"'},
-    {"also", '\\'},
-    {"play", '<'},
-    {"can", '>'},
-    {"end", ','},
-    {"put", '.'},
-    {"home", '?'},
-    {"read", '/'},
-    {"hand", '|'},
-    {"out", '`'},
-    {"I", '~'},
-    };
         string[] mas = text.Split(' ');
         // for(int i=0; i<mas.Length; i++) Console.WriteLine(mas[i]);
         for (int i = 0; i < mas.Length; i++)
         {
-            foreach (var z in codes)
-            {
-                mas[i] = mas[i].Replace(z.Key.ToString(), z.Value.ToString());
-            }
+            foreach (var z in codes) mas[i] = mas[i].Replace(z.Key.ToString(), z.Value.ToString());
         }
-        Console.WriteLine("Заменённый слова из массива");
-        for (int i = 0; i < mas.Length; i++) Console.Write("{0} ", mas[i]);
+        return mas;
+    }
+    private string[] Output(string[] mas, Dictionary<string, char> codes)
+    {
         for (int i = 0; i < mas.Length; i++)
         {
             foreach (var z in codes)
@@ -265,56 +260,111 @@ class Task_12 : Task
                 mas[i] = mas[i].Replace(z.Value.ToString(), z.Key.ToString());
             }
         }
+        return mas;
+    }
+    private string ParseText(string text)
+    {
+        Dictionary<string, char> codes = new Dictionary<string, char>
+    {
+        {"you", '@'},
+        {"as", '#'},
+        {"his", '$'},
+        {"which", '%'},
+        {"do", '^'},
+        {"that", '&'},
+        {"he", '*'},
+        {"if", '('},
+        {"will", ')'},
+        {"how", '-'},
+        {"said", '_'},
+        {"an", '='},
+        {"on", '+'},
+        {"tell", '{'},
+        {"set", '['},
+        {"at", ']'},
+        {"by", ':'},
+        {"well", '"'},
+        {"also", '\\'},
+        {"play", '<'},
+        {"can", '>'},
+        {"end", ','},
+        {"put", '.'},
+        {"home", '?'},
+        {"read", '/'},
+        {"hand", '|'},
+        {"out", '`'},
+        {"I", '~'},
+    };
+        string[] mas = Input(text, codes);
+
+        // for(int i=0; i<mas.Length; i++) Console.WriteLine(mas[i]);
+        Console.WriteLine("Заменённый слова из массива");
+        for (int i = 0; i < mas.Length; i++) Console.Write("{0} ", mas[i]);
+
+        mas = Output(mas, codes);
         return String.Join(" ", text);
     }
 }
 class Task_13 : Task
 {
-    public Task_13(string t) : base(t) { }
+    private string _text;
+    public Task_13(string t) : base(t) { _text = t; }
     public override string ToString()
-    {
-        return base.ToString();
-    }
-    public override void Print(string text, string[] code)
-    {
-        Console.WriteLine("\n\nЗадание№13");
-        text = ParseText(text, code);
-    }
-    protected override string ParseText(string text, string[] code)
     {
         Dictionary<char, int> letters = new Dictionary<char, int>();
-        string[] words = text.Split(' ');
-        for (int i = 0; i < words.Length; i++)
+        string[] words = _text.Split(' ');
+        letters = Dictionary_Full(letters, words);
+        letters = Counter(letters, words);
+        Show(letters, words);
+        return _text;
+    }
+    private Dictionary<char, int> Dictionary_Full(Dictionary<char, int> letters, string[] words)
+    {
+        for (int i = 0; i < words.Length - 1; i++)
         {
             if (!letters.ContainsKey(words[i][0]))
-                letters.Add(words[i][0], 0);
+            {
+                if ((((int)(words[i][0]) > 64) && ((int)(words[i][1]) < 91)) || (((int)(words[i][0]) > 96) && ((int)(words[i][1]) < 123)))
+                {
+                    letters.Add(words[i][0], 0);
+                }
+                else if (((int)(words[i][0]) > 1039) && ((int)(words[i][1]) < 1106))
+                {
+                    letters.Add(words[i][0], 0);
+                }
+            }
         }
-        for (int i = 0; i < words.Length; i++)
+        return letters;
+    }
+    private Dictionary<char, int> Counter(Dictionary<char, int> letters, string[] words)
+    {
+        for (int i = 0; i < words.Length - 1; i++)
         {
-            letters[words[i][0]]= (letters[words[i][0]]+1);
+            letters[words[i][0]] = (letters[words[i][0]] + 1);
         }
+        return letters;
+    }
+    private void Show(Dictionary<char, int> letters, string[] words)
+    {
         foreach (var i in letters)
         {
-            Console.WriteLine($"Буква: {i.Key}, Процент встреч: {100*i.Value/ words.Length}%");
+            Console.WriteLine($"Буква: {i.Key}, Процент встреч: {(i.Value * 100) / words.Length}%");
         }
-        return text;
     }
 }
+
 class Task_15 : Task
 {
-    public Task_15(string t) : base(t) { }
+    private string _text;
+    public Task_15(string t) : base(t) { _text = t; }
     public override string ToString()
     {
-        return base.ToString();
+        _text = ParseText(_text);
+        return _text;
     }
-    public override void Print(string text, string[] code)
+    private string ParseText(string text)
     {
-        text = ParseText(text, code);
-        Console.WriteLine("\nРезультат сложения: {0}", text);
-    }
-    protected override string ParseText(string text, string[] code)
-    {
-        string[] numbers= new string[text.Length];
+        string[] numbers = new string[text.Length];
         string number = "";
         int count = 0;
         for (int i = 0; i < text.Length; i++)
@@ -326,14 +376,14 @@ class Task_15 : Task
             }
             else
             {
-                 number = "";
+                number = "";
                 count++;
             }
         }
         count = 0;
         foreach (var i in numbers)
         {
-            if ((i != "")&&(i!=null)) count += int.Parse(i);
+            if ((i != "") && (i != null)) count += int.Parse(i);
         }
         text = count.ToString();
         return text;
@@ -341,19 +391,8 @@ class Task_15 : Task
 }
 public class Program
 {
-    public static void Main(string[] args)
+    private string[] Input_Code(string[] code)
     {
-        Console.WriteLine("Введите текст для 8 и 9 номера.\nДля корректной работы 9 номера введите английский текст");
-        string text = Console.ReadLine();
-        string[] code = new string[10];
-        var task8 = new Task_8("");
-        var task9 = new Task_9("");
-        task8.Print(text, code);
-        task9.Print(text, code);
-
-        var task10 = new Task_10("");
-        Console.WriteLine("\n\nЗадание№10\nВведите закодированный текст");
-        text = Console.ReadLine();
         Console.WriteLine("\n Задайте таблицу для 5 кодов");
         for (int i = 0; i < 10; i++)
         {
@@ -373,18 +412,53 @@ public class Program
                 i--; // Уменьшаем счетчик, чтобы повторно запросить ввод
             }
         }
-        task10.Print(text, code);
+        return code;
+    }
+    
+    public static void Main(string[] args)
+    {
+        //№8
+        string[] code = new string[10];
+        Console.WriteLine("Задание№8.Введите текст:");
+        string text = Console.ReadLine();
+        var task8 = new Task_8(text);
+        text = task8.ToString();
+        Console.Write("\n\n{0}", text);
 
+        //№9
+        Console.WriteLine("\n\nЗадание№9.Введите текст:");
+        text = Console.ReadLine();
+        var task9 = new Task_9(text);
+        text = task9.ToString();
+        Console.Write("\nРезультат: \n{0}", text);
+
+        //10
+        Console.WriteLine("\n\nЗадание№10\nВведите закодированный текст");
+        text = Console.ReadLine();
+        var task10 = new Task_10(text, code);
+        var inputt = new Program();
+        code = inputt.Input_Code(code);
+        text = task10.ToString();
+        Console.Write("\nРезультат:\n{0}", text);
+
+        //12
         Console.WriteLine("\n\nЗадание№12\nВведите текст (пример текста с кодовыми словами - you, as. which, do, he, if, how said an tell at by )");
         text = Console.ReadLine();
-        var task12 = new Task_12("");
-        task12.Print(text, code);
-        var task13 = new Task_13("");
-        task13.Print(text, code);
+        var task12 = new Task_12(text);
+        text = task12.ToString();
+        Console.Write("\nРезультат:\n{0}", text);
 
+        //13
+        Console.WriteLine("\n\nЗадание№13.Введите текст");
+        text = Console.ReadLine();
+        var task13 = new Task_13(text);
+        Console.Write("\nРезультат: \n{0}",  task13.ToString());
+        
+        //15
         Console.WriteLine("\n\nЗадание№15\nВведите текст с числами");
         text = Console.ReadLine();
-        var task15 = new Task_15("");
-        task15.Print(text, code);
+        var task15 = new Task_15(text);
+        text= task15.ToString();;
+        Console.WriteLine("\nРезультат сложения: {0}", text);
     }
 }
