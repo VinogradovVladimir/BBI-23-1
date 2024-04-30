@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -28,19 +30,28 @@ class Task_13 : Task
     private string _text;
     public Task_13(string t) : base(t) { _text = t; }
     struct Statistic
-    { 
-        public char letter;
-        public int count;
-        public Statistic(char l, int c)
+    {
+        public char letter { get; private set; }
+        public int count { get; private set; }
+        /*        public Statistic(char l, int c)
+                {
+                    letter = l;
+                    count = c;
+                }*/
+        public void add()
+        {
+            count++;
+        }
+        public void create(char l)
         {
             letter = l;
-            count = c;
+            count = 1;
         }
     }
     public override string ToString()
     {
         string[] words = _text.Split(' ');
-        Statistic[] letters = new Statistic[words.Length] ;
+        Statistic[] letters = new Statistic[words.Length];
         letters = Create(letters, words);
         Show(letters, words);
         return _text;
@@ -50,26 +61,56 @@ class Task_13 : Task
         int k = 0;
         for (int i = 0; i < words.Length; i++)
         {
-            bool have = false;
-            for (int j=0; j < k; j++)
+            if (char.IsLetter(char.ToLower(words[i][0])))
             {
-                if (char.ToLower(words[i][0]) == letters[j].letter)
-                { 
-                    letters[j].count++;
-                    have = true;
-                    break;
+                bool have = false;
+                for (int j = 0; j < k; j++)
+                {
+                    if ((char.ToLower(words[i][0]) == letters[j].letter))
+                    {
+                        letters[j].add();
+                        have = true;
+                        break;
+                    }
+                }
+                if (!have)
+                {
+                    letters[k].create(char.ToLower(words[i][0]));
+                    k++;
                 }
             }
-            if (!have)
-            {
-                letters[k].letter = char.ToLower(words[i][0]);
-                letters[k].count=1;
-                k++;
-            }
-
         }
         return letters;
     }
+    /*    private Statistic[] Create(Statistic[] letters, string[] words)
+        {
+            int k = 0;
+            for (int i = 0; i < words.Length; i++)
+            {
+                UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(words[i][0]);
+                if (category==UnicodeCategory.UppercaseLetter || category==UnicodeCategory.LowercaseLetter)
+                {
+                    bool have = false;
+                    for (int j = 0; j < k; j++)
+                    {
+                        if ((char.ToLower(words[i][0]) == letters[j].letter))
+                        {
+                            letters[j].add();
+                            have = true;
+                            break;
+                        }
+                    }
+                    if (!have)
+                    {
+                        letters[k].create(char.ToLower(words[i][0]));
+                        k++;
+                    }
+                }
+            }
+            return letters;
+        }*/
+
+
     private void Show(Statistic[] letters, string[] words)
     {
         foreach (var i in letters)
